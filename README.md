@@ -75,3 +75,15 @@ Você deve desenvolver uma pequena aplicação WEB utilizando a linguagem de pro
 * Procure fazer vários commits com mensagens claras;
 
 ## Execução
+
+Criar e popular o banco de dados:
+
+Execute o Script bd/teste_pratico_bd.sql;
+
+Iniciar servidor backend:
+
+Venv *****
+
+Iniciar página web:
+
+npm ****
