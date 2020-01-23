@@ -73,3 +73,5 @@ Você deve desenvolver uma pequena aplicação WEB utilizando a linguagem de pro
 * Testes unitários para qualquer parte do sistema;
 * Comentários claros no código;
 * Procure fazer vários commits com mensagens claras;
+
+## Execução
