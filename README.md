@@ -59,7 +59,7 @@ Você deve desenvolver uma pequena aplicação WEB utilizando a linguagem de pro
 * Nesta aplicação é necessário desenvolver apenas duas páginas, uma para listar as vendas cadastradas e outra para realizar o cadastro das vendas;
 * Não é necessário implementar o cadastro de produtos e clientes, somente suas tabelas no banco de dados. Popule essas diretamente no banco de dados;
 * O cadastro de produtos deve conter: código e descrição;
-* O cadastro de clientes deve conter: código nome e cnpj; 
+* O cadastro de clientes deve conter: código nome e cnpj;
 * O banco de dados não pode permitir 2 produtos com o mesmo código;
 * O campo Número da Venda deve ser sequencial e gerado automaticamente;
 * O campo Número do Item deve ser sequencial e gerado automaticamente;
