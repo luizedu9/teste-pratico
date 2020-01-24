@@ -15,7 +15,7 @@
       <b-row> <!-- Cliente / CEP -->
         <b-col cols="8"  class="border">
           Cliente
-          <model-select :options="clientes" v-model="form.cliente"></model-select> <!-- vue-search-select plugin -->
+           <model-list-select :list="clientes" v-model="form.cliente" option-value="codigo" option-text="nome"></model-list-select>
         </b-col>
         <b-col class="border">
           CEP
@@ -60,11 +60,11 @@
         </b-col>
         <b-col class="border">
           Cód. Produto
-          <model-list-select :list="produtos" v-model="item.produto" option-value="text" option-text="value"></model-list-select>
+          <model-list-select :list="produtos" v-model="item.produto" option-value="codigo" option-text="codigo"></model-list-select>
         </b-col>
         <b-col cols="3" class="border">
           Desc. Produto
-          <model-select :options="produtos" v-model="item.produto"></model-select>
+           <model-list-select :list="produtos" v-model="item.produto" option-value="codigo" option-text="descricao"></model-list-select>
         </b-col>
         <b-col class="border">
           Preço
@@ -89,10 +89,10 @@
           {{forItem.codItem}}
         </b-col>
         <b-col class="border">
-          {{forItem.produto.value}}  
+          {{forItem.produto.codigo}}  
         </b-col>
         <b-col cols="3" class="border">
-          {{forItem.produto.text}} 
+          {{forItem.produto.descricao}} 
         </b-col>
         <b-col class="border">
           {{forItem.preco}}          
@@ -116,7 +116,7 @@
           {{form.valorTotal}}
         </b-col>
         <b-col class="border" cols="1" >
-          <b-button type="submit" variant="success">.</b-button>
+          <b-button type="submit" variant="success" @click="submitVenda">.</b-button>
         </b-col>
       </b-row>
 
@@ -129,8 +129,7 @@
 <script>
 import axios from 'axios'; // Requisições a API
 import moment from 'moment' // Data
-import { ModelSelect } from 'vue-search-select' // Input de pesquisa do cliente e produto
-import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do produto
+import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do cliente e produto
 
   export default {
     data() {
@@ -141,8 +140,8 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do prod
         item: {
           codItem: '',
           produto: {
-            value: '',
-            text: '',
+            codigo: '',
+            descricao: '',
           },
           preco: '',
           quantidade: '',
@@ -151,8 +150,8 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do prod
         form: {
           numVenda: '',
           cliente: {
-            value: '',
-            text: ''
+            codigo: '',
+            nome: '',
           },
           date: '',
           cep: '',
@@ -204,10 +203,15 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do prod
         this.item.preco = ''
         this.item.quantidade = ''
         this.item.total = '0,00'
+      },
+      submitVenda() {
+        axios.post('http://localhost:5000/insertVenda', this.form).then((res) => {
+          // eslint-disable-next-line
+          console.log(res);});
       }
+
     },
     components: {
-      ModelSelect,
       ModelListSelect
     },
   }
