@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Teste Pratico
-#
 # Backend.py
-#
 # Luiz Eduardo Pereira
 
 from flask import Flask, jsonify, request, Blueprint, current_app
@@ -13,6 +11,7 @@ import requests
 import os
 import sys
 from datetime import datetime, timedelta
+import pymysql
 
 #######################################################################################################
 #                                                                                                     #
@@ -21,9 +20,17 @@ from datetime import datetime, timedelta
 #######################################################################################################
 
 # Configuração Flask
+DEBUG = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 CORS(app)
+
+# Configuração PyMySQL
+db = pymysql.connect("localhost", "admin", "admin7576", "teste_pratico")
+cursor = db.cursor()
+cursor.execute("SELECT VERSION()")
+data = cursor.fetchone()
+print ("Database version : %s " % data)
 
 #######################################################################################################
 #                                                                                                     #
@@ -31,17 +38,21 @@ CORS(app)
 #                                                                                                     #
 #######################################################################################################
 
-# Recebe CEP / Retorna endereço json
-def cep_request(cep):
-	#valida_cep()
-	try:
-		response = requests.get("https://viacep.com.br/ws/" + cep + "/json/") # Realiza a requisição do CEP ao WebService
-		if response.status_code == 200:
-			return response.json() # Converte responsta para json
-		else:
-			return None # Houve algum erro
-	except:
-		return None # Houve algum erro
+# STATUS:
+#   0 - SUCESSO
+#   1 - OCORREU UM PROBLEMA INESPERADO
+@app.route('/startVenda', methods=['GET'])
+def startVenda():
+    if request.method == 'GET':
+        
+        #clientes = find_clientes()
+        if (True):
+            cod = 9999
+            clientes = [{'value': '1', 'text': 'a'}, {'value': '2', 'text': 'b'}]
+            produtos = [{'value': '1', 'text': 'x'}, {'value': '2', 'text': 'z'}]
+            return jsonify({'status': '0', 'codigoVenda': cod, 'clientes': clientes, 'produtos': produtos })
+        else:
+            return jsonify({'status': '1'})
 
 #######################################################################################################
 #                                                                                                     #
