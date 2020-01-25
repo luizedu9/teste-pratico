@@ -77,7 +77,7 @@
         <b-col class="border">
           Total
           <br>
-          {{item.total}}
+          {{item.total | reformat}}
         </b-col>
         <b-col class="border" cols="1">
           <b-button type="submit" variant="success" @click="submitItem">.</b-button>
@@ -95,13 +95,13 @@
           {{forItem.produto.descricao}} 
         </b-col>
         <b-col class="border">
-          {{forItem.preco}}          
+          {{forItem.preco | reformat}}          
         </b-col>
         <b-col class="border">
-          {{forItem.quantidade}}
+          {{forItem.quantidade | reformat}}
         </b-col>
         <b-col class="border">
-          {{forItem.total}}
+          {{forItem.total | reformat}}
         </b-col>
         <b-col class="border" cols="1">
         </b-col>
@@ -113,7 +113,7 @@
         <b-col class="border">
           Total
           <br>
-          {{form.valorTotal}}
+          {{form.valorTotal | reformat}}
         </b-col>
         <b-col class="border" cols="1" >
           <b-button type="submit" variant="success" @click="submitVenda">.</b-button>
@@ -145,7 +145,7 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
           },
           preco: '',
           quantidade: '',
-          total: "0,00",
+          total: 0.00,
         },
         form: {
           numVenda: '',
@@ -162,9 +162,9 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
           localidade: '',
           uf: '',
           itens: [],
-          valorTotal: '0,00',
+          valorTotal: 0.00,
         },        
-        teste: '',
+        teste: 'ahhhhhhhh',
       }
     },
     created() { // Inicializa informações necessarias - Data, codigo venda, clientes e produtos
@@ -179,6 +179,11 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
           this.warningAlert = true;
         }
       })
+    }, 
+    filters: {
+      reformat: function (value) { // Reformata Float para aparecer com ","
+        return value.toString().replace('.', ',');
+      },
     },
     methods: {
       calculaCep() { // responsavel pela busca do endereço de entrega via CEP
@@ -192,17 +197,19 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
             this.form.uf = response.data.uf));
       },
       calculaTotal() { // Calcula valor final (Preço * Quantidade)
-        this.item.total = (this.item.quantidade.replace(",", ".") * this.item.preco.replace(",", ".")).toString().replace(".", ",")
+        this.item.total = this.item.quantidade.replace(",", ".") * this.item.preco.replace(",", ".")
       },
       submitItem() {
-        this.item.codItem = this.itemCont 
+        this.item.codItem = this.itemCont
+        this.item.preco = parseFloat(this.item.preco.replace(",", "."))
+        this.item.quantidade = parseFloat(this.item.quantidade.replace(",", "."))
         this.form.itens.push(Object.assign({}, this.item)); // Adiciona item a compra
         this.itemCont = this.itemCont + 1 // Incrementa contador
-        this.form.valorTotal = (parseFloat(this.form.valorTotal.replace(",", ".")) + parseFloat(this.item.total.replace(",", "."))).toString().replace(".", ",");
+        this.form.valorTotal = this.form.valorTotal + this.item.total;
         this.item.produto = {}
         this.item.preco = ''
         this.item.quantidade = ''
-        this.item.total = '0,00'
+        this.item.total = 0.00
       },
       submitVenda() {
         axios.post('http://localhost:5000/insertVenda', this.form).then((res) => {

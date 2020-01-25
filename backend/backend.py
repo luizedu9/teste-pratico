@@ -4,13 +4,10 @@
 # Backend.py
 # Luiz Eduardo Pereira
 
-from flask import Flask, jsonify, request, Blueprint, current_app
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import json
 import requests
-import os
-import sys
-from datetime import datetime, timedelta
 import pymysql
 
 #######################################################################################################
@@ -39,7 +36,7 @@ cursor = db.cursor()
 #   0 - SUCESSO
 #   1 - OCORREU UM PROBLEMA INESPERADO
 
-# Retorna dados necessario para o funcionamento da venda
+# Retorna dados necessarios para o funcionamento da venda
 @app.route('/startVenda', methods=['GET'])
 def startVenda():
     if request.method == 'GET':
@@ -56,17 +53,52 @@ def startVenda():
 def insertVenda():
     if request.method == 'POST':
         try:
-            post_data = request.get_json()
-            print(post_data)
+            response = request.get_json()
+            processa_venda(response) # Envia para uma função que processa os dados para inserir no banco
+            db_commit()
             return jsonify({'status': '0'})
         except: # Se ocorrer algum erro, retorna status de erro
+            db_rollback()
             return jsonify({'status': '1'})
+
+# Retorna dados necessarios para o funcionamento da consulta
+@app.route('/startConsulta', methods=['GET'])
+def startConsulta():
+    if request.method == 'GET':
+        try:
+            resultado = find_sql_consulta()
+            return jsonify({'status': '0', 'consulta': resultado})
+        except: # Se ocorrer algum erro, retorna status de erro
+            return jsonify({'status': '1'})
+
+#######################################################################################################
+#                                                                                                     #
+#                                           FUNCTIONS                                                 #
+#                                                                                                     #
+#######################################################################################################
+
+# Processa os dados para serem inseridos no banco de dados
+def processa_venda(dados):
+    insert_venda(dados)
+    for item in dados['itens']:
+        insert_item(item)    
+        insert_venda_item(dados['numVenda'], find_numero_item()) # Insere relação da venda ao item na tabela Venda_Item
 
 #######################################################################################################
 #                                                                                                     #
 #                                               BD                                                    #
 #                                                                                                     #
 #######################################################################################################
+
+# Retorna vendas cadastradas
+def find_all_vendas():
+    cursor.execute("SELECT * FROM Venda;")
+    resultados = cursor.fetchall()
+    vendas = []
+    for result in resultados: # Transforma o resultado em lista de dicionarios
+        vendas.append({"codigo": result[0], "data": result[1], "total": result[2], "cep": result[3], "logradouro": result[4], "numero": result[5], "complemento": result[6], "bairro": result[7], "localidade": result[8], "uf": result[9], "codigoCliente": result[10]})
+    print(vendas)
+    return(vendas)
 
 # Retorna clientes cadastrados (Lista de dicionarios)
 def find_all_clientes():
@@ -77,11 +109,6 @@ def find_all_clientes():
         clientes.append({"codigo": result[0], "nome": result[1], "cnpj": result[2]})
     return(clientes)
 
-# Retorna o número de vendas cadastradas
-def find_numero_venda():
-    cursor.execute("SELECT * FROM Venda;")
-    return(len(cursor.fetchall()) + 1) # Número da ultima venda + 1
-
 # Retorna produtos cadastrados (Lista de dicionarios)
 def find_all_produtos():
     cursor.execute("SELECT * FROM Produto;")
@@ -90,6 +117,45 @@ def find_all_produtos():
     for result in resultados:
         produtos.append({"codigo": result[0], "descricao": result[1]})
     return(produtos)
+
+def find_sql_consulta():
+    cursor.execute("SELECT ven_codigo, ven_data, cli_nome, ven_total FROM Venda JOIN Cliente ON cli_codigo = ven_cli_codigo")
+    resultados = cursor.fetchall()
+    consultas = []
+    for result in resultados:
+        consultas.append({"codigo": result[0], "data": result[1], "cliente": result[2], "total": result[3]})
+    return(consultas)
+
+# Retorna o número de vendas cadastradas
+def find_numero_venda():
+    cursor.execute("SELECT * FROM Venda;")
+    return(len(cursor.fetchall()) + 1) # Número da ultima venda + 1
+
+# Retorna o número de itens cadastradas
+def find_numero_item():
+    cursor.execute("SELECT * FROM Item;")
+    return(len(cursor.fetchall()))
+
+def insert_venda(dados):
+    sql_venda = "INSERT INTO Venda VALUES(null, '" + dados['date'] + "', " + str(dados['valorTotal']) + ", '" + dados['cep'] + "', '" + dados['logradouro'] + "', '" + dados['numero'] + "', '" + dados['complemento'] + "', '" + dados['bairro'] + "', '" + dados['localidade'] + "', '" + dados['uf'] + "', " + str(dados['cliente']['codigo']) + ")"
+    cursor.execute(sql_venda) # Efetiva venda
+    return
+
+def insert_item(item):
+    sql_item = "INSERT INTO Item VALUES(null, " + str(item['codItem']) + ", " + str(item['preco']) + ", " + str(item['quantidade']) + ", " + str(item['total']) + ", " + str(item['produto']['codigo']) + ")"
+    print(sql_item)
+    cursor.execute(sql_item) # Efetiva item
+
+def insert_venda_item(cod_venda, cod_item):
+    sql = "INSERT INTO Venda_Item VALUES(" + str(cod_venda) + ", " + str(cod_item) + ")"
+    print(sql)
+    cursor.execute(sql)
+
+def db_commit():
+    db.commit()
+
+def db_rollback():
+    db.rollback()
 
 #######################################################################################################
 #                                                                                                     #
