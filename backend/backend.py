@@ -119,7 +119,7 @@ def find_all_produtos():
     return(produtos)
 
 def find_sql_consulta():
-    cursor.execute("SELECT ven_codigo, ven_data, cli_nome, ven_total FROM Venda JOIN Cliente ON cli_codigo = ven_cli_codigo")
+    cursor.execute("SELECT ven_codigo, ven_data, cli_nome, ven_total FROM Venda JOIN Cliente ON cli_codigo = ven_cli_codigo ORDER BY ven_codigo")
     resultados = cursor.fetchall()
     consultas = []
     for result in resultados:

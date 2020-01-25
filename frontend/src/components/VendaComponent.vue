@@ -1,6 +1,10 @@
 <template>
   <div class="container">
 
+    <div class="alert alert-danger" role="alert" v-if="alert">
+      {{ alertMessage }}
+    </div>
+
     <b-container class="border">
 
       <b-row> <!-- Código venda / data -->
@@ -68,11 +72,11 @@
         </b-col>
         <b-col class="border">
           Preço
-          <input type="text" class="form-control" id="preco" v-model="item.preco" @input="calculaTotal">
+          <input type="number" class="form-control" id="preco" v-model="item.preco" @input="calculaTotal">
         </b-col>
         <b-col class="border">
           Quantidade
-          <input type="text" class="form-control" id="quantidade" v-model="item.quantidade" @input="calculaTotal">
+          <input type="number" class="form-control" id="quantidade" v-model="item.quantidade" @input="calculaTotal">
         </b-col>
         <b-col class="border">
           Total
@@ -80,7 +84,7 @@
           {{item.total | reformat}}
         </b-col>
         <b-col class="border" cols="1">
-          <b-button type="submit" variant="success" @click="submitItem">.</b-button>
+          <b-button style="margin-left:-0.5em; margin-top:1em" type="submit" size="sm" variant="primary" @click="submitItem">Adicionar</b-button>
         </b-col>
       </b-row>
 
@@ -116,13 +120,12 @@
           {{form.valorTotal | reformat}}
         </b-col>
         <b-col class="border" cols="1" >
-          <b-button type="submit" variant="success" @click="submitVenda">.</b-button>
+          <b-button type="submit" style="margin-left:-0.3em; margin-top:0.5em" size="sm" variant="success" @click="submitVenda">Finalizar</b-button>
         </b-col>
       </b-row>
 
     </b-container>  
 
-  {{form}}
   </div>
 </template>
 
@@ -163,8 +166,9 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
           uf: '',
           itens: [],
           valorTotal: 0.00,
-        },        
-        teste: 'ahhhhhhhh',
+        },
+        alert: false,
+        alertMessage: "",        
       }
     },
     created() { // Inicializa informações necessarias - Data, codigo venda, clientes e produtos
@@ -182,7 +186,7 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
     }, 
     filters: {
       reformat: function (value) { // Reformata Float para aparecer com ","
-        return value.toString().replace('.', ',');
+        return value.toFixed(2).toString().replace('.', ',');
       },
     },
     methods: {
@@ -200,19 +204,31 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
         this.item.total = this.item.quantidade.replace(",", ".") * this.item.preco.replace(",", ".")
       },
       submitItem() {
-        this.item.codItem = this.itemCont
-        this.item.preco = parseFloat(this.item.preco.replace(",", "."))
-        this.item.quantidade = parseFloat(this.item.quantidade.replace(",", "."))
-        this.form.itens.push(Object.assign({}, this.item)); // Adiciona item a compra
-        this.itemCont = this.itemCont + 1 // Incrementa contador
-        this.form.valorTotal = this.form.valorTotal + this.item.total;
-        this.item.produto = {}
-        this.item.preco = ''
-        this.item.quantidade = ''
-        this.item.total = 0.00
+        if (this.item.produto.codigo == "") {
+          this.alert = true
+          this.alertMessage = "Cód. Produto / Desc. Produto requerido!"
+        } else if (this.item.preco == "" || this.item.preco == 0) {
+          this.alert = true
+          this.alertMessage = "Preço do produto requerido!"
+        } else if (this.item.quantidade == "" || this.item.quantidade == 0) {
+          this.alert = true
+          this.alertMessage = "Quantidade do produto requerida!"
+        } else {
+          this.alert = false
+          this.item.codItem = this.itemCont
+          this.item.preco = parseFloat(this.item.preco.replace(",", "."))
+          this.item.quantidade = parseFloat(this.item.quantidade.replace(",", "."))
+          this.form.itens.push(Object.assign({}, this.item)); // Adiciona item a compra
+          this.itemCont = this.itemCont + 1 // Incrementa contador
+          this.form.valorTotal = this.form.valorTotal + this.item.total;
+          this.item.produto = {'codigo': '', 'descricao': ''}
+          this.item.preco = ''
+          this.item.quantidade = ''
+          this.item.total = 0.00
+        }
       },
       submitVenda() {
-        axios.post('http://localhost:5000/insertVenda', this.form).then((res) => {
+        axios.post('http://localhost:5000/insertVenda', this.form).then((res) => {      
           // eslint-disable-next-line
           console.log(res);});
       }

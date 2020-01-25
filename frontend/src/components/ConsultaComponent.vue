@@ -61,7 +61,7 @@ import axios from 'axios'; // Requisições a API
     },
     filters: {
       reformat: function (value) { // Reformata Float para aparecer com ","
-        return value.toString().replace('.', ',');
+        return value.toFixed(2).toString().replace('.', ',');
       },
     }, 
   }
