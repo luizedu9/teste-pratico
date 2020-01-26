@@ -19,40 +19,40 @@
       <b-row> <!-- Cliente / CEP -->
         <b-col cols="8"  class="border">
           Cliente
-           <model-list-select :list="clientes" v-model="form.cliente" option-value="codigo" option-text="nome"></model-list-select>
+           <model-list-select style="margin-bottom:0.3em;" :list="clientes" v-model="form.cliente" option-value="codigo" option-text="nome"></model-list-select>
         </b-col>
         <b-col class="border">
           CEP
-          <input class="form-control" id="cep" v-on:blur="calculaCep" v-model="form.cep" v-mask="'#####-###'"/>
+          <input class="form-control" style="margin-bottom:0.3em;" id="cep" v-on:blur="calculaCep" v-model="form.cep" v-mask="'#####-###'"/>
         </b-col>
       </b-row>
 
       <b-row> <!-- Endereço de Entrega -->
         <b-col class="border" cols="6">
           Logradouro:
-          <input type="text" class="form-control" id="logradouro" v-model="form.logradouro">
+          <input type="text" style="margin-bottom:0.3em;" class="form-control" id="logradouro" v-model="form.logradouro">
         </b-col>
         <b-col class="border">
           Complemento:
-          <input type="text" class="form-control" id="complemento" v-model="form.complemento">
+          <input type="text" style="margin-bottom:0.3em;" class="form-control" id="complemento" v-model="form.complemento">
         </b-col>
         <b-col class="border" cols="1"> 
           Nº:
-          <input type="text" class="form-control" id="numero" size="1" v-model="form.numero">
+          <input type="text" style="margin-bottom:0.3em;" class="form-control" id="numero" size="1" v-model="form.numero">
         </b-col>  
       </b-row>
       <b-row>
         <b-col class="border" cols="6">
           Bairro:
-          <input type="text" class="form-control" id="bairro" v-model="form.bairro">
+          <input type="text" style="margin-bottom:0.3em;" class="form-control" id="bairro" v-model="form.bairro">
         </b-col>
         <b-col class="border">
           Localidade:
-          <input type="text" class="form-control" id="localidade" v-model="form.localidade">
+          <input type="text" disabled style="margin-bottom:0.3em;" class="form-control" id="localidade" v-model="form.localidade">
         </b-col>
         <b-col class="border" cols="1">
           UF:
-          <input type="text" class="form-control" id="uf" size="1" v-model="form.uf">
+          <input type="text" disabled style="margin-bottom:0.3em;" class="form-control" id="uf" size="1" v-model="form.uf">
         </b-col>  
       </b-row>
 
@@ -64,19 +64,19 @@
         </b-col>
         <b-col class="border">
           Cód. Produto
-          <model-list-select :list="produtos" v-model="item.produto" option-value="codigo" option-text="codigo"></model-list-select>
+          <model-list-select style="margin-bottom:0.3em;" :list="produtos" v-model="item.produto" option-value="codigo" option-text="codigo"></model-list-select>
         </b-col>
         <b-col cols="3" class="border">
           Desc. Produto
-           <model-list-select :list="produtos" v-model="item.produto" option-value="codigo" option-text="descricao"></model-list-select>
+           <model-list-select style="margin-bottom:0.3em;" :list="produtos" v-model="item.produto" option-value="codigo" option-text="descricao"></model-list-select>
         </b-col>
         <b-col class="border">
           Preço
-          <input type="number" class="form-control" id="preco" v-model="item.preco" @input="calculaTotal">
+          <input type="number" style="margin-bottom:0.3em;" class="form-control" id="preco" v-model="item.preco" @input="calculaTotal">
         </b-col>
         <b-col class="border">
           Quantidade
-          <input type="number" class="form-control" id="quantidade" v-model="item.quantidade" @input="calculaTotal">
+          <input type="number" style="margin-bottom:0.3em;" class="form-control" id="quantidade" v-model="item.quantidade" @input="calculaTotal">
         </b-col>
         <b-col class="border">
           Total

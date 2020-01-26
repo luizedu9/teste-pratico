@@ -81,9 +81,8 @@ def startConsulta():
 def processa_venda(dados):
     insert_venda(dados)
     for item in dados['itens']:
-        insert_item(item)    
-        insert_venda_item(dados['numVenda'], find_numero_item()) # Insere relação da venda ao item na tabela Venda_Item
-
+        insert_item(item, dados['numVenda'])    
+       
 #######################################################################################################
 #                                                                                                     #
 #                                               BD                                                    #
@@ -141,15 +140,9 @@ def insert_venda(dados):
     cursor.execute(sql_venda) # Efetiva venda
     return
 
-def insert_item(item):
-    sql_item = "INSERT INTO Item VALUES(null, " + str(item['codItem']) + ", " + str(item['preco']) + ", " + str(item['quantidade']) + ", " + str(item['total']) + ", " + str(item['produto']['codigo']) + ")"
-    print(sql_item)
+def insert_item(item, codigo_venda):
+    sql_item = "INSERT INTO Item VALUES(null, " + str(item['codItem']) + ", " + str(item['preco']) + ", " + str(item['quantidade']) + ", " + str(item['total']) + ", " + str(item['produto']['codigo']) + ", " + str(codigo_venda) +  ")"
     cursor.execute(sql_item) # Efetiva item
-
-def insert_venda_item(cod_venda, cod_item):
-    sql = "INSERT INTO Venda_Item VALUES(" + str(cod_venda) + ", " + str(cod_item) + ")"
-    print(sql)
-    cursor.execute(sql)
 
 def db_commit():
     db.commit()

@@ -25,11 +25,18 @@ CREATE TABLE IF NOT EXISTS `teste_pratico`.`Item` (
   `ite_quantidade` INT(11) NOT NULL,
   `ite_total` FLOAT(11) NOT NULL,
   `ite_pro_codigo` INT(11) NOT NULL,
+  `ite_ven_codigo` INT(11) NOT NULL,
   PRIMARY KEY (`ite_codigo`),
   INDEX `fk_Item_Produto1_idx` (`ite_pro_codigo` ASC),
+  INDEX `fk_Item_Venda1_idx` (`ite_ven_codigo` ASC),
   CONSTRAINT `fk_Item_Produto1`
     FOREIGN KEY (`ite_pro_codigo`)
     REFERENCES `teste_pratico`.`Produto` (`pro_codigo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Item_Venda1`
+    FOREIGN KEY (`ite_ven_codigo`)
+    REFERENCES `teste_pratico`.`Venda` (`ven_codigo`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -60,25 +67,6 @@ CREATE TABLE IF NOT EXISTS `teste_pratico`.`Venda` (
   CONSTRAINT `fk_Venda_Cliente1`
     FOREIGN KEY (`ven_cli_codigo`)
     REFERENCES `teste_pratico`.`Cliente` (`cli_codigo`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
-CREATE TABLE IF NOT EXISTS `teste_pratico`.`Venda_Item` (
-  `vi_ven_codigo` INT(11) NOT NULL,
-  `vi_ite_codigo` INT(11) NOT NULL,
-  PRIMARY KEY (`vi_ven_codigo`, `vi_ite_codigo`),
-  INDEX `fk_Venda_has_Item_Item1_idx` (`vi_ite_codigo` ASC),
-  INDEX `fk_Venda_has_Item_Venda1_idx` (`vi_ven_codigo` ASC),
-  CONSTRAINT `fk_Venda_has_Item_Venda1`
-    FOREIGN KEY (`vi_ven_codigo`)
-    REFERENCES `teste_pratico`.`Venda` (`ven_codigo`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Venda_has_Item_Item1`
-    FOREIGN KEY (`vi_ite_codigo`)
-    REFERENCES `teste_pratico`.`Item` (`ite_codigo`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
