@@ -96,7 +96,6 @@ def find_all_vendas():
     vendas = []
     for result in resultados: # Transforma o resultado em lista de dicionarios
         vendas.append({"codigo": result[0], "data": result[1], "total": result[2], "cep": result[3], "logradouro": result[4], "numero": result[5], "complemento": result[6], "bairro": result[7], "localidade": result[8], "uf": result[9], "codigoCliente": result[10]})
-    print(vendas)
     return(vendas)
 
 # Retorna clientes cadastrados (Lista de dicionarios)
@@ -129,11 +128,6 @@ def find_sql_consulta():
 def find_numero_venda():
     cursor.execute("SELECT * FROM Venda;")
     return(len(cursor.fetchall()) + 1) # Número da ultima venda + 1
-
-# Retorna o número de itens cadastradas
-def find_numero_item():
-    cursor.execute("SELECT * FROM Item;")
-    return(len(cursor.fetchall()))
 
 def insert_venda(dados):
     sql_venda = "INSERT INTO Venda VALUES(null, '" + dados['date'] + "', " + str(dados['valorTotal']) + ", '" + dados['cep'] + "', '" + dados['logradouro'] + "', '" + dados['numero'] + "', '" + dados['complemento'] + "', '" + dados['bairro'] + "', '" + dados['localidade'] + "', '" + dados['uf'] + "', " + str(dados['cliente']['codigo']) + ")"

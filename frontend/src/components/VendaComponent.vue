@@ -1,8 +1,15 @@
 <template>
   <div class="container">
 
+    <!-- Alertas -->
     <div class="alert alert-danger" role="alert" v-if="alert">
       {{ alertMessage }}
+    </div>
+    <div class="alert alert-danger" role="alert" v-if="cepInvalido">
+      CEP Inválido
+    </div>
+    <div class="alert alert-success" role="success" v-if="success">
+      {{ successMessage }}
     </div>
 
     <b-container class="border">
@@ -56,7 +63,7 @@
         </b-col>  
       </b-row>
 
-      <b-row> <!-- Lista de Compras -->
+      <b-row> <!-- Input Lista de Compras -->
         <b-col class="border" cols="1">
           Item
           <br>
@@ -111,7 +118,7 @@
         </b-col>
       </b-row>
 
-      <b-row>
+      <b-row> <!-- Valor Total - Enviar -->
          <b-col class="border" cols="8">
         </b-col>
         <b-col class="border">
@@ -168,21 +175,29 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
           valorTotal: 0.00,
         },
         alert: false,
-        alertMessage: "",        
+        alertMessage: "",       
+        success: false,
+        successMessage: "",
+        cepInvalido: false, 
       }
     },
     created() { // Inicializa informações necessarias - Data, codigo venda, clientes e produtos
-      this.form.date = moment(new Date()).format("DD/MM/YYYY");
-      axios.get(`http://localhost:5000/startVenda`).then((response) => {
-        if (response.data.status == 0) {
+      this.form.date = moment(new Date()).format("DD/MM/YYYY"); // Recebe data do sistema
+      axios.get(`http://localhost:5000/startVenda`).then((response) => { // Requisita dados iniciais
+        if (response.data.status == 0) { // Status 0 = Recebido com sucesso
           this.form.numVenda = response.data.codigoVenda;
           this.clientes = response.data.clientes;
           this.produtos = response.data.produtos;
-        } else {
-          this.message = 'Houve um erro inesperado. Tente mais tarde';
-          this.warningAlert = true;
+        } else { // Erro
+          this.alert = true
+          this.alertMessage = "Houve um erro inesperado. Tente mais tarde!"
         }
-      })
+      }).catch(error => {
+        // eslint-disable-next-line
+        console.log(error.response);
+        this.alert = true
+        this.alertMessage = "O servidor não está respondendo. Tente mais tarde!"
+      });
     }, 
     filters: {
       reformat: function (value) { // Reformata Float para aparecer com ","
@@ -193,12 +208,24 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
       calculaCep() { // responsavel pela busca do endereço de entrega via CEP
         axios.get("https://viacep.com.br/ws/" + this.form.cep + "/json/")
           .then(response => (
+            this.cepInvalido = response.data.erro == true ? true : false, // Checa se CEP existe
+            this.teste = response.data,
+            // Desabilita inputs preenchidos pelo ViaCep
+            document.getElementById("logradouro").disabled = response.data.logradouro == "" || response.data.logradouro == null ? false : true,
+            document.getElementById("complemento").disabled = response.data.complemento == "" || response.data.complemento == null ? false : true,
+            document.getElementById("bairro").disabled = response.data.bairro == "" || response.data.bairro == null ? false : true,
+            // Preenche campos recebidos pelo ViaCEP
             this.form.logradouro = response.data.logradouro,
-            this.form.numero = response.data.numero,
             this.form.complemento = response.data.complemento,
             this.form.bairro = response.data.bairro,
             this.form.localidade = response.data.localidade,
-            this.form.uf = response.data.uf));
+            this.form.uf = response.data.uf)
+            ).catch(error => {
+              // eslint-disable-next-line
+              console.log(error.response);
+              this.alert = true
+              this.alertMessage = "ViaCEP não está respondendo. Tente mais tarde!"
+            });
       },
       calculaTotal() { // Calcula valor final (Preço * Quantidade)
         this.item.total = this.item.quantidade.replace(",", ".") * this.item.preco.replace(",", ".")
@@ -207,10 +234,10 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
         if (this.item.produto.codigo == "") {
           this.alert = true
           this.alertMessage = "Cód. Produto / Desc. Produto requerido!"
-        } else if (this.item.preco == "" || this.item.preco == 0) {
+        } else if (this.item.preco == "" || this.item.preco <= 0) {
           this.alert = true
           this.alertMessage = "Preço do produto requerido!"
-        } else if (this.item.quantidade == "" || this.item.quantidade == 0) {
+        } else if (this.item.quantidade == "" || this.item.quantidade <= 0) {
           this.alert = true
           this.alertMessage = "Quantidade do produto requerida!"
         } else {
@@ -228,16 +255,54 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
         }
       },
       submitVenda() {
-        axios.post('http://localhost:5000/insertVenda', this.form).then((res) => {      
-          // eslint-disable-next-line
-          console.log(res);});
+        // Tratamento de erro
+        if (this.form.cliente.codigo == "") {
+          this.alert = true
+          this.alertMessage = "Cliente requerido!"
+        } else if (this.form.cep == "") {
+          this.alert = true
+          this.alertMessage = "CEP requerido!"
+        } else if (this.form.logradouro == "") {
+          this.alert = true
+          this.alertMessage = "Logradouro requerido!"
+        } else if (this.form.complemento == "") {
+          this.alert = true
+          this.alertMessage = "Complemento requerido!"
+        } else if (this.form.numero == "") {
+          this.alert = true
+          this.alertMessage = "Número requerido!"
+        } else if (this.form.bairro == "") {
+          this.alert = true
+          this.alertMessage = "Bairro requerido!"
+        } else if (this.itemCont == 1) {
+          this.alert = true
+          this.alertMessage = "Pelo menos 1 item é requerido na compra!"
+        } else {
+          // Envio da venda ao servidor
+          axios.post('http://localhost:5000/insertVenda', this.form).then(() => {      
+            // Reseta componentes da venda
+            this.form = { 'numVenda': this.form.numVenda + 1, 'cliente': { 'codigo': '', 'nome': '',}, 'date': '',
+              'cep': '', 'logradouro': '', 'numero': '', 'complemento': '', 'bairro': '', 
+              'localidade': '', 'uf': '', 'itens': [], 'valorTotal': 0.00, };
+            // Reseta interface
+            this.itemCont = 1;
+            document.getElementById("logradouro").disabled = false;
+            document.getElementById("complemento").disabled = false;
+            document.getElementById("bairro").disabled = false;
+            this.alert = false;
+            this.success = true;
+            this.successMessage = "Venda efetuada com sucesso!"
+          }).catch(error => {
+            // eslint-disable-next-line
+            console.log(error.response);
+            this.alert = true
+            this.alertMessage = "O servidor não está respondendo. Tente mais tarde!"
+          });
+        }
       }
-
     },
     components: {
       ModelListSelect
     },
   }
-  // eslint-disable-next-line
-  // console.log("!");
 </script>
