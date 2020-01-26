@@ -223,14 +223,14 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
             ).catch(error => {
               // eslint-disable-next-line
               console.log(error.response);
-              this.alert = true
-              this.alertMessage = "ViaCEP não está respondendo. Tente mais tarde!"
+              this.cepInvalido = true;
             });
       },
       calculaTotal() { // Calcula valor final (Preço * Quantidade)
         this.item.total = this.item.quantidade.replace(",", ".") * this.item.preco.replace(",", ".")
       },
       submitItem() {
+        // Tratamento de erro
         if (this.item.produto.codigo == "") {
           this.alert = true
           this.alertMessage = "Cód. Produto / Desc. Produto requerido!"
@@ -241,6 +241,7 @@ import { ModelListSelect } from 'vue-search-select' // Input de pesquisa do clie
           this.alert = true
           this.alertMessage = "Quantidade do produto requerida!"
         } else {
+          // Insere item
           this.alert = false
           this.item.codItem = this.itemCont
           this.item.preco = parseFloat(this.item.preco.replace(",", "."))

@@ -83,7 +83,7 @@ USE teste_pratico;
 INSERT INTO Cliente 
 	(cli_nome, cli_cnpj) 
 VALUES 
-	("Mercadinho Folha Verde", "24.992.563/0001-71"),
+	("Mercadinho São Judas", "24.992.563/0001-71"),
 	("Mercadinho Iris Faria", "63.087.157/0001-16"),
 	("Mercadinho Canastra", "51.490.721/0001-68"),
 	("Mercadinho Vó Ana", "73.694.173/0001-20"),

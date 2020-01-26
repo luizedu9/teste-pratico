@@ -76,14 +76,46 @@ Você deve desenvolver uma pequena aplicação WEB utilizando a linguagem de pro
 
 ## Execução
 
+Esta aplicação foi criada utilizando Vue.js + FLASK + MySQL.
+
+### MySQL
+
+Diretório: /bd/
+
 Criar e popular o banco de dados:
 
-Execute o Script bd/teste_pratico_bd.sql;
+Execute o Script /teste_pratico_bd.sql
 
-Iniciar servidor backend:
+### Servidor
 
-Venv *****
+Diretório: /backend/
 
-Iniciar página web:
+O servidor da aplicação foi criado utilizando FLASK, biblioteca do Python. É necessario ter Python 3.6.8 para executar o servidor.
 
-npm ****
+Os pacotes necessarios para executar essa aplicação devem ser instalados em um ambiente virtual (virtualenv).
+
+Instalação da Virtualenv: python3 -m pip install --user virtualenv
+
+Criando uma Virtualenv (dentro do diretório /backend/): python3 -m venv env
+
+O servidor sempre deve ser executado no ambiente da virtualenv, pois nele está instalado todos os pacotes.
+
+Abrir virtualenv: source venv/bin/activate
+
+Instalar pacotes para funcionamento do servidor: pip install -r requirements.txt
+
+Executar Servidor: python3 backend.py
+
+### Cliente
+
+Diretório: /frontend/
+
+O cliente da aplicação foi criado utilizando Vue.js. É necessario ter NPM (Node Package Manager) para executar o cliente.
+
+Instalar NPM: sudo apt install npm
+
+Instalar dependencias do cliente (dentro do diretório /frontend/): npm install
+
+Executar Cliente: npm run serve
+
+Página do cliente disponivel em: http://localhost:8080/
