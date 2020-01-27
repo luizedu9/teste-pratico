@@ -118,4 +118,12 @@ Instalar dependencias do cliente (dentro do diretório /frontend/): npm install
 
 Executar Cliente: npm run serve
 
-Página do cliente disponivel em: http://localhost:8080/
+### Testes
+
+Abrir página: http://localhost:8080/
+
+Para realizar uma venda, todos os campos devem estar preenchidos, e deve haver pelo menos um item cadastrado. O sistema realiza checagem em busca de valores incorretos de todos os campo ao serem submetidos.
+
+Ao digitar um CEP válido fará com que os inputs dos campos preenchidos sejam desabilitados.
+
+Clientes são buscados pelo nome. Produtos podem ser buscados por codigo ou nome.
