@@ -96,7 +96,7 @@ Os pacotes necessarios para executar essa aplicação devem ser instalados em um
 
 Instalação da Virtualenv: python3 -m pip install --user virtualenv
 
-Criando uma Virtualenv (dentro do diretório /backend/): python3 -m venv env
+Criando uma Virtualenv (dentro do diretório /backend/): python3 -m venv venv
 
 O servidor sempre deve ser executado no ambiente da virtualenv, pois nele está instalado todos os pacotes.
 
